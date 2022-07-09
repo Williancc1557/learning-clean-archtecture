@@ -9,7 +9,7 @@ interface SutTypes {
 const makeEncrypter = (): Encrypter => {
     class EncrypterStub implements Encrypter {
         public async encrypt(value: string): Promise<string> { // eslint-disable-line
-            return "rashed_password";
+            throw new Error();
         }
     }
 
@@ -40,5 +40,23 @@ describe("DbAddAccount Usecase", () => {
         sut.add(accountData);
 
         expect(encryptSpy).toHaveBeenCalledWith("valid_password");
+    });
+
+    test("should throw if Encrypter throws", async () => {
+        const { encrypterStub, sut } = makeSut();
+
+        jest.spyOn(encrypterStub, "encrypt").mockImplementation(() => {
+            throw new Error();
+        });
+
+        const accountData = {
+            name: "valid_name",
+            email: "valid_email@email.com",
+            password: "valid_password",
+        };
+
+        const promise = sut.add(accountData);
+
+        await expect(promise).rejects.toThrow();
     });
 });
