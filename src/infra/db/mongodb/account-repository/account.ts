@@ -11,18 +11,9 @@ export class AccountMongoRepository implements AddAccountRepository {
     const objectId = (await accountCollection.insertOne(accountData))
       .insertedId;
 
-    return this.renameIdKey(
+    return mongoHelper.map(
       await this.getUserByObjectId(accountCollection, objectId)
     );
-  }
-
-  private renameIdKey(account: WithId<Document>): AccountModel {
-    const { _id, ...accountWithoudId } = account;
-
-    return {
-      ...accountWithoudId,
-      id: _id.toString(),
-    } as AccountModel;
   }
 
   private getUserByObjectId(

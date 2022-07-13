@@ -14,4 +14,14 @@ export const mongoHelper = {
   getCollection(name: string): Collection {
     return this.client.db().collection(name);
   },
+
+  // eslint-disable-next-line
+  map(account: any): any {
+    const { _id, ...accountWithoudId } = account;
+
+    return {
+      ...accountWithoudId,
+      id: _id.toString(),
+    };
+  },
 };
