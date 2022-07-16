@@ -1,10 +1,20 @@
 import { SignUpController } from "./signup";
-import { MissingParamError, InvalidParamError, ServerError } from "../../errors";
-import type { EmailValidator, AccountModel, AddAccount, AddAccountModel } from "./signup-protocols";
+import {
+  MissingParamError,
+  InvalidParamError,
+  ServerError,
+} from "../../errors";
+import type {
+  EmailValidator,
+  AccountModel,
+  AddAccount,
+  AddAccountModel,
+} from "./signup-protocols";
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const makeEmailValidator = (): EmailValidator => {
   class EmailValidatorStub implements EmailValidator {
-    public isValid(email: string): boolean { // eslint-disable-line
+    public isValid(email: string): boolean {
       return true;
     }
   }
@@ -13,14 +23,14 @@ const makeEmailValidator = (): EmailValidator => {
 
 const makeAddAccount = (): AddAccount => {
   class AddAccountStub implements AddAccount {
-    public async add(account: AddAccountModel): Promise<AccountModel> { // eslint-disable-line
+    public async add(account: AddAccountModel): Promise<AccountModel> {
       const fakeAccount = {
         id: "valid_id",
         name: "valid_name",
         email: "valid_email@mail.com",
         password: "valid_password",
       };
-      return new Promise(resolve => resolve(fakeAccount));
+      return new Promise((resolve) => resolve(fakeAccount));
     }
   }
   return new AddAccountStub();
@@ -101,7 +111,9 @@ describe("SignUp Controller", () => {
     const httpResponse = await sut.handle(httpRequest);
 
     expect(httpResponse.statusCode).toBe(400);
-    expect(httpResponse.body).toStrictEqual(new MissingParamError("passwordConfirmation"));
+    expect(httpResponse.body).toStrictEqual(
+      new MissingParamError("passwordConfirmation")
+    );
   });
 
   test("should return 400 if password confirmation fails", async () => {
@@ -117,7 +129,9 @@ describe("SignUp Controller", () => {
     const httpResponse = await sut.handle(httpRequest);
 
     expect(httpResponse.statusCode).toBe(400);
-    expect(httpResponse.body).toStrictEqual(new InvalidParamError("passwordConfirmation"));
+    expect(httpResponse.body).toStrictEqual(
+      new InvalidParamError("passwordConfirmation")
+    );
   });
 
   test("should return 400 if an invalid email is provided", async () => {
