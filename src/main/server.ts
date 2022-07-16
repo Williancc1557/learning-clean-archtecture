@@ -1,6 +1,19 @@
-import app from "./config/app";
+import { mongoHelper } from "../infra/db/mongodb/helpers/mongo-helper";
+import { logger } from "../utils/pino";
+import env from "./config/env";
 
-const PORT = 5050;
-app.listen(PORT, () =>
-  console.log(`Server started with http://localhost:${PORT}`)
-);
+const bootstrap = async () => {
+  await mongoHelper
+    .connect(env.mongoUrl)
+    .then(() => logger.info("mongoDB started"))
+    .catch((err) => logger.error(err));
+
+  const app = (await import("./config/app")).default;
+  app.listen(env.port, () =>
+    logger.info(`Server started with http://localhost:${env.port}`)
+  );
+};
+
+bootstrap().then(() => {
+  logger.info("api learning english made by willian");
+});

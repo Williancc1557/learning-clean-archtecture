@@ -23,6 +23,9 @@
     "@types/jest": "^28.1.4",
     "@types/mongodb": "^4.0.7",
     "@types/node": "^18.0.0",
+    "@types/pino": "^7.0.5",
+    "@types/pino-http": "^5.8.1",
+    "@types/pino-pretty": "^4.7.5",
     "@types/supertest": "^2.0.12",
     "@types/validator": "^13.7.3",
     "eslint": "^8.19.0",
@@ -41,6 +44,9 @@
     "express": "^4.18.1",
     "fast-glob": "^3.2.11",
     "mongodb": "^4.7.0",
+    "pino": "^8.1.0",
+    "pino-http": "^8.1.1",
+    "pino-pretty": "^8.1.0",
     "validator": "^13.7.0"
   }
 }
