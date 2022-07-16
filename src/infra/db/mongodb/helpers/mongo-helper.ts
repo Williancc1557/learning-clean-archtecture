@@ -9,10 +9,20 @@ export const mongoHelper = {
 
   async disconnect(): Promise<void> {
     await this.client.close();
+    this.client = null;
   },
 
-  getCollection(name: string): Collection {
-    return this.client.db().collection(name);
+  dbCollection(): Collection {
+    return;
+  },
+
+  async getCollection(name: string): Promise<Collection> {
+    try {
+      return this.client.db().collection(name);
+    } catch {
+      await this.connect();
+      return this.client.db().collection(name);
+    }
   },
 
   // eslint-disable-next-line
