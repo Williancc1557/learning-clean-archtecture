@@ -19,14 +19,14 @@ export class SignUpController implements Controller {
 
   public async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
+      const data = {
+        ...httpRequest.body,
+      };
+
       const paramMissing = this.missingThisParam(httpRequest);
       if (paramMissing) {
         return badRequest(new MissingParamError(paramMissing));
       }
-
-      const data = {
-        ...httpRequest.body,
-      };
 
       if (!this.comparePasswordWithPasswordConfirmation(data)) {
         return badRequest(new InvalidParamError("passwordConfirmation"));
