@@ -20,17 +20,11 @@ export class SignUpController implements Controller {
 
   public async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
-      const requiredFields = [
-        "name",
-        "email",
-        "password",
-        "passwordConfirmation",
-      ];
-      for (const field of requiredFields) {
-        if (!httpRequest.body[field]) {
-          return badRequest(new MissingParamError(field));
-        }
+      const missingParam = this.returnBadRequestIfMissingParam(httpRequest);
+      if (missingParam) {
+        return badRequest(missingParam);
       }
+
       const { name, email, password, passwordConfirmation } = httpRequest.body;
       if (password !== passwordConfirmation) {
         return badRequest(new InvalidParamError("passwordConfirmation"));
@@ -49,6 +43,22 @@ export class SignUpController implements Controller {
     } catch (error) {
       console.error(error);
       return serverError();
+    }
+  }
+
+  private returnBadRequestIfMissingParam(
+    httpRequest: HttpRequest
+  ): Error | void {
+    const requiredFields = [
+      "name",
+      "email",
+      "password",
+      "passwordConfirmation",
+    ];
+    for (const field of requiredFields) {
+      if (!httpRequest.body[field]) {
+        return new MissingParamError(field);
+      }
     }
   }
 }
