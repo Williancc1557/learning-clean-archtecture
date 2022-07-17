@@ -19,10 +19,11 @@ export class SignUpController implements Controller {
 
   public async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
-      const missingParam = this.returnBadRequestIfMissingParam(httpRequest);
-      if (missingParam) {
-        return badRequest(missingParam);
+      const paramMissing = this.missingThisParam(httpRequest);
+      if (paramMissing) {
+        return badRequest(new MissingParamError(paramMissing));
       }
+
       const data = {
         ...httpRequest.body,
       };
@@ -48,9 +49,7 @@ export class SignUpController implements Controller {
     }
   }
 
-  private returnBadRequestIfMissingParam(
-    httpRequest: HttpRequest
-  ): Error | void {
+  private missingThisParam(httpRequest: HttpRequest): string | void {
     const requiredFields = [
       "name",
       "email",
@@ -59,7 +58,7 @@ export class SignUpController implements Controller {
     ];
     for (const field of requiredFields) {
       if (!httpRequest.body[field]) {
-        return new MissingParamError(field);
+        return field;
       }
     }
   }
