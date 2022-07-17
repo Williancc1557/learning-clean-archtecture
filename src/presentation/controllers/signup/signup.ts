@@ -28,7 +28,7 @@ export class SignUpController implements Controller {
         ...httpRequest.body,
       };
 
-      if (!this.comparePasswordAndPasswordConfirmation(data)) {
+      if (!this.comparePasswordWithPasswordConfirmation(data)) {
         return badRequest(new InvalidParamError("passwordConfirmation"));
       }
 
@@ -64,7 +64,7 @@ export class SignUpController implements Controller {
   }
 
   // eslint-disable-next-line
-  private comparePasswordAndPasswordConfirmation(data: any): boolean {
+  private comparePasswordWithPasswordConfirmation(data: any): boolean {
     if (data.password !== data.passwordConfirmation) {
       return false;
     }
