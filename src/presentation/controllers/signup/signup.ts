@@ -7,7 +7,6 @@ import type {
 } from "./signup-protocols";
 import { MissingParamError, InvalidParamError } from "../../errors";
 import { badRequest, serverError, ok } from "../../helpers/http-helper";
-
 export class SignUpController implements Controller {
   private readonly emailValidator: EmailValidator;
 
@@ -28,9 +27,10 @@ export class SignUpController implements Controller {
         ...httpRequest.body,
       };
 
-      if (data.password !== data.passwordConfirmation) {
+      if (!this.comparePasswordAndPasswordConfirmation(data)) {
         return badRequest(new InvalidParamError("passwordConfirmation"));
       }
+
       const isValid = this.emailValidator.isValid(data.email);
       if (!isValid) {
         return badRequest(new InvalidParamError("email"));
@@ -62,5 +62,13 @@ export class SignUpController implements Controller {
         return new MissingParamError(field);
       }
     }
+  }
+
+  // eslint-disable-next-line
+  private comparePasswordAndPasswordConfirmation(data: any): boolean {
+    if (data.password !== data.passwordConfirmation) {
+      return false;
+    }
+    return true;
   }
 }
