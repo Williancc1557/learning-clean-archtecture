@@ -24,19 +24,21 @@ export class SignUpController implements Controller {
       if (missingParam) {
         return badRequest(missingParam);
       }
+      const data = {
+        ...httpRequest.body,
+      };
 
-      const { name, email, password, passwordConfirmation } = httpRequest.body;
-      if (password !== passwordConfirmation) {
+      if (data.password !== data.passwordConfirmation) {
         return badRequest(new InvalidParamError("passwordConfirmation"));
       }
-      const isValid = this.emailValidator.isValid(email);
+      const isValid = this.emailValidator.isValid(data.email);
       if (!isValid) {
         return badRequest(new InvalidParamError("email"));
       }
       const account = await this.addAccount.add({
-        name,
-        email,
-        password,
+        name: data.name,
+        email: data.email,
+        password: data.password,
       });
 
       return ok(account);
