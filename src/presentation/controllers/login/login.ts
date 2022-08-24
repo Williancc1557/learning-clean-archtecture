@@ -1,8 +1,13 @@
 import { MissingParamError } from "../../errors";
 import { badRequest } from "../../helpers/http-helper";
 import type { Controller, HttpRequest, HttpResponse } from "../../protocols";
+import type { EmailValidator } from "../signup/signup-protocols";
 
 export class LoginController implements Controller {
+    public constructor(
+        private readonly emailValidator: EmailValidator
+    ) {}
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
         if (!httpRequest.body.email) {
@@ -12,5 +17,7 @@ export class LoginController implements Controller {
         if (!httpRequest.body.password) {
             return badRequest(new MissingParamError("password"));
         }
+
+        this.emailValidator.isValid(httpRequest.body.email);
     }
 }
