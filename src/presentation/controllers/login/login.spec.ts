@@ -2,6 +2,7 @@ import type { Authentication } from "../../../domain/usecases/authentication";
 import { InvalidParamError, MissingParamError } from "../../errors";
 import {
   badRequest,
+  ok,
   serverError,
   unauthorized,
 } from "../../helpers/http-helper";
@@ -137,11 +138,20 @@ describe("Login Controller", () => {
 
   test("should return 500 if Authentication.auth throws", async () => {
     const { sut, authenticationStub } = makeSut();
-
     jest.spyOn(authenticationStub, "auth").mockRejectedValueOnce(new Error());
-
     const httpResponse = await sut.handle(makeFakeRequest());
 
     expect(httpResponse).toStrictEqual(serverError());
+  });
+
+  test("should return 200 if valid credentials are provided", async () => {
+    const { sut } = makeSut();
+    const httpResponse = await sut.handle(makeFakeRequest());
+
+    expect(httpResponse).toStrictEqual(
+      ok({
+        accessToken: "any_token",
+      })
+    );
   });
 });
