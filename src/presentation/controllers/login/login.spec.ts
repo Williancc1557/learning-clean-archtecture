@@ -90,7 +90,6 @@ describe("Login Controller", () => {
 
   test("should return 400 if an invalid email is provided", async () => {
     const { sut, emailValidatorStub } = makeSut();
-
     const isValidSpy = jest.spyOn(emailValidatorStub, "isValid");
 
     await sut.handle(makeFakeRequest());
@@ -100,9 +99,7 @@ describe("Login Controller", () => {
 
   test("should return 400 if EmailValidator.isValid returns false", async () => {
     const { sut, emailValidatorStub } = makeSut();
-
     jest.spyOn(emailValidatorStub, "isValid").mockReturnValueOnce(false);
-
     const httpResponse = await sut.handle(makeFakeRequest());
 
     expect(httpResponse).toStrictEqual(
@@ -124,9 +121,7 @@ describe("Login Controller", () => {
 
   test("should call Authentication with correct values", async () => {
     const { sut, authenticationStub } = makeSut();
-
     const authSpy = jest.spyOn(authenticationStub, "auth");
-
     await sut.handle(makeFakeRequest());
 
     expect(authSpy).toHaveBeenCalledWith("any_email", "any_password");
