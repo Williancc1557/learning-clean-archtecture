@@ -1,15 +1,12 @@
 import { SignUpController } from "./signup";
-import {
-  MissingParamError,
-  InvalidParamError,
-  ServerError,
-} from "../../errors";
+import { MissingParamError, InvalidParamError } from "../../errors";
 import type {
   EmailValidator,
   AccountModel,
   AddAccount,
   AddAccountModel,
 } from "./signup-protocols";
+import { badRequest, ok, serverError } from "../../helpers/http-helper";
 
 const makeFakeHttpRequest = () => ({
   body: {
@@ -74,8 +71,9 @@ describe("SignUp Controller", () => {
     };
     const httpResponse = await sut.handle(httpRequest);
 
-    expect(httpResponse.statusCode).toBe(400);
-    expect(httpResponse.body).toStrictEqual(new MissingParamError("name"));
+    expect(httpResponse).toStrictEqual(
+      badRequest(new MissingParamError("name"))
+    );
   });
 
   test("should return 400 if no email is provided", async () => {
@@ -89,8 +87,9 @@ describe("SignUp Controller", () => {
     };
     const httpResponse = await sut.handle(httpRequest);
 
-    expect(httpResponse.statusCode).toBe(400);
-    expect(httpResponse.body).toStrictEqual(new MissingParamError("email"));
+    expect(httpResponse).toStrictEqual(
+      badRequest(new MissingParamError("email"))
+    );
   });
 
   test("should return 400 if no password is provided", async () => {
@@ -104,8 +103,9 @@ describe("SignUp Controller", () => {
     };
     const httpResponse = await sut.handle(httpRequest);
 
-    expect(httpResponse.statusCode).toBe(400);
-    expect(httpResponse.body).toStrictEqual(new MissingParamError("password"));
+    expect(httpResponse).toStrictEqual(
+      badRequest(new MissingParamError("password"))
+    );
   });
 
   test("should return 400 if no password confirmation is provided", async () => {
@@ -119,9 +119,8 @@ describe("SignUp Controller", () => {
     };
     const httpResponse = await sut.handle(httpRequest);
 
-    expect(httpResponse.statusCode).toBe(400);
-    expect(httpResponse.body).toStrictEqual(
-      new MissingParamError("passwordConfirmation")
+    expect(httpResponse).toStrictEqual(
+      badRequest(new MissingParamError("passwordConfirmation"))
     );
   });
 
@@ -136,9 +135,8 @@ describe("SignUp Controller", () => {
       },
     });
 
-    expect(httpResponse.statusCode).toBe(400);
-    expect(httpResponse.body).toStrictEqual(
-      new InvalidParamError("passwordConfirmation")
+    expect(httpResponse).toStrictEqual(
+      badRequest(new InvalidParamError("passwordConfirmation"))
     );
   });
 
@@ -147,8 +145,9 @@ describe("SignUp Controller", () => {
     jest.spyOn(emailValidatorStub, "isValid").mockReturnValueOnce(false);
     const httpResponse = await sut.handle(makeFakeHttpRequest());
 
-    expect(httpResponse.statusCode).toBe(400);
-    expect(httpResponse.body).toStrictEqual(new InvalidParamError("email"));
+    expect(httpResponse).toStrictEqual(
+      badRequest(new InvalidParamError("email"))
+    );
   });
 
   test("should call EmailValidator with correct email", async () => {
@@ -166,8 +165,7 @@ describe("SignUp Controller", () => {
     });
     const httpResponse = await sut.handle(makeFakeHttpRequest());
 
-    expect(httpResponse.statusCode).toBe(500);
-    expect(httpResponse.body).toStrictEqual(new ServerError());
+    expect(httpResponse).toStrictEqual(serverError());
   });
 
   test("should return 500 if AddAccount throws", async () => {
@@ -177,8 +175,7 @@ describe("SignUp Controller", () => {
     });
     const httpResponse = await sut.handle(makeFakeHttpRequest());
 
-    expect(httpResponse.statusCode).toBe(500);
-    expect(httpResponse.body).toStrictEqual(new ServerError());
+    expect(httpResponse).toStrictEqual(serverError());
   });
 
   test("should call AddAccount with correct values", async () => {
@@ -197,12 +194,13 @@ describe("SignUp Controller", () => {
     const { sut } = makeSut();
     const httpResponse = await sut.handle(makeFakeHttpRequest());
 
-    expect(httpResponse.statusCode).toBe(200);
-    expect(httpResponse.body).toStrictEqual({
-      id: "valid_id",
-      name: "valid_name",
-      email: "valid_email@mail.com",
-      password: "valid_password",
-    });
+    expect(httpResponse).toStrictEqual(
+      ok({
+        id: "valid_id",
+        name: "valid_name",
+        email: "valid_email@mail.com",
+        password: "valid_password",
+      })
+    );
   });
 });
