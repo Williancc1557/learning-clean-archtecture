@@ -14,7 +14,7 @@ describe("SignUp routes", () => {
   test("should return an account on sucess", async () => {
     const req = await request(app).post("/api/signup").send({
       name: "Willian",
-      email: "willian.cavalcanti@gmai.com",
+      email: "willian.cavalcanti@gmail.com",
       password: "123",
       passwordConfirmation: "123",
     });
