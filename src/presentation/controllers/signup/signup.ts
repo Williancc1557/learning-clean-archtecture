@@ -6,7 +6,7 @@ import type {
   AddAccount,
   Validation,
 } from "./signup-protocols";
-import { MissingParamError, InvalidParamError } from "../../errors";
+import { InvalidParamError } from "../../errors";
 import { badRequest, serverError, ok } from "../../helpers/http-helper";
 export class SignUpController implements Controller {
   public constructor(
@@ -27,11 +27,6 @@ export class SignUpController implements Controller {
         ...httpRequest.body,
       };
 
-      const paramMissing = this.missingThisParam(data);
-      if (paramMissing) {
-        return badRequest(new MissingParamError(paramMissing));
-      }
-
       if (!this.comparePasswordWithPasswordConfirmation(data)) {
         return badRequest(new InvalidParamError("passwordConfirmation"));
       }
@@ -50,20 +45,6 @@ export class SignUpController implements Controller {
     } catch (error) {
       console.error(error);
       return serverError();
-    }
-  }
-
-  private missingThisParam(data: HttpRequest["body"]): string | void {
-    const requiredFields = [
-      "name",
-      "email",
-      "password",
-      "passwordConfirmation",
-    ];
-    for (const field of requiredFields) {
-      if (!data[field]) {
-        return field;
-      }
     }
   }
 
