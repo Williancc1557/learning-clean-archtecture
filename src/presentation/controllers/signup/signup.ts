@@ -27,10 +27,6 @@ export class SignUpController implements Controller {
         ...httpRequest.body,
       };
 
-      if (!this.comparePasswordWithPasswordConfirmation(data)) {
-        return badRequest(new InvalidParamError("passwordConfirmation"));
-      }
-
       if (!this.emailValidator.isValid(data.email)) {
         return badRequest(new InvalidParamError("email"));
       }
@@ -46,13 +42,5 @@ export class SignUpController implements Controller {
       console.error(error);
       return serverError();
     }
-  }
-
-  // eslint-disable-next-line
-  private comparePasswordWithPasswordConfirmation(data: any): boolean {
-    if (data.password !== data.passwordConfirmation) {
-      return false;
-    }
-    return true;
   }
 }
