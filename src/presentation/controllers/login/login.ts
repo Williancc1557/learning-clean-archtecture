@@ -8,14 +8,12 @@ import type { Validation } from "../../protocols/validation";
 import type {
   Controller,
   Authentication,
-  EmailValidator,
   HttpRequest,
   HttpResponse,
 } from "./login-protocols";
 
 export class LoginController implements Controller {
   public constructor(
-    private readonly emailValidator: EmailValidator,
     private readonly authentication: Authentication,
     private readonly validation: Validation
   ) {}
@@ -30,7 +28,7 @@ export class LoginController implements Controller {
       }
 
       const { email, password } = httpRequest.body;
-      const auth = await this.authentication.auth(email, password);
+      const auth = await this.authentication.auth({ email, password });
 
       if (!auth) {
         return unauthorized();

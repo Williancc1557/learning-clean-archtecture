@@ -8,26 +8,15 @@ import {
 import type { Validation } from "../../protocols/validation";
 import { LoginController } from "./login";
 import type {
-  EmailValidator,
   HttpRequest,
   Authentication,
+  AuthenticationModel,
 } from "./login-protocols";
-
-const makeEmailValidator = (): EmailValidator => {
-  class EmailValidatorStub implements EmailValidator {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public isValid(email: string): boolean {
-      return true;
-    }
-  }
-
-  return new EmailValidatorStub();
-};
 
 const makeAuthentication = (): Authentication => {
   class AuthenticationStub implements Authentication {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public async auth(email: string, password: string): Promise<string> {
+    public async auth(authentication: AuthenticationModel): Promise<string> {
       return "any_token";
     }
   }
@@ -44,7 +33,6 @@ const makeFakeRequest = (): HttpRequest => ({
 
 interface SutTypes {
   sut: LoginController;
-  emailValidatorStub: EmailValidator;
   authenticationStub: Authentication;
   validationStub: Validation;
 }
@@ -60,18 +48,12 @@ const makeValidation = (): Validation => {
 };
 
 const makeSut = (): SutTypes => {
-  const emailValidatorStub = makeEmailValidator();
   const authenticationStub = makeAuthentication();
   const validationStub = makeValidation();
-  const sut = new LoginController(
-    emailValidatorStub,
-    authenticationStub,
-    validationStub
-  );
+  const sut = new LoginController(authenticationStub, validationStub);
 
   return {
     sut,
-    emailValidatorStub,
     authenticationStub,
     validationStub,
   };
@@ -83,7 +65,10 @@ describe("Login Controller", () => {
     const authSpy = jest.spyOn(authenticationStub, "auth");
     await sut.handle(makeFakeRequest());
 
-    expect(authSpy).toHaveBeenCalledWith("any_email", "any_password");
+    expect(authSpy).toHaveBeenCalledWith({
+      email: "any_email",
+      password: "any_password",
+    });
   });
 
   test("should return 401 if invalid credentials are provided", async () => {
