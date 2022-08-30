@@ -41,4 +41,11 @@ describe("Validation Composite", () => {
 
     expect(error).toStrictEqual(new Error());
   });
+
+  test("should not return if succeeds", () => {
+    const { sut } = makeSut();
+    const error = sut.validate({ field: "any_value" });
+
+    expect(error).toBeFalsy();
+  });
 });
