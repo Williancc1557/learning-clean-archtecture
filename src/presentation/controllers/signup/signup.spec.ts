@@ -3,10 +3,10 @@ import { MissingParamError } from "../../errors";
 import type {
   AccountModel,
   AddAccount,
-  Validation,
   AddAccountModel,
 } from "./signup-protocols";
 import { badRequest, ok, serverError } from "../../helpers/http-helper";
+import type { Validation } from "../../protocols/validation";
 
 const makeFakeHttpRequest = () => ({
   body: {

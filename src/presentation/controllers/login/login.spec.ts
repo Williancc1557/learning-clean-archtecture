@@ -5,11 +5,11 @@ import {
   serverError,
   unauthorized,
 } from "../../helpers/http-helper";
+import type { Validation } from "../../protocols/validation";
 import { LoginController } from "./login";
 import type {
   EmailValidator,
   HttpRequest,
-  Validation,
   Authentication,
 } from "./login-protocols";
 
