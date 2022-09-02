@@ -2,26 +2,39 @@ import type { LoadAccountByEmailRepository } from "../../protocols/load-account-
 import type { AccountModel } from "../add-account/db-add-account-protocols";
 import { DbAuthentication } from "./db-authentication";
 
+const makeFakeAccount = (): AccountModel => ({
+  email: "any_email@mail.com",
+  id: "any_id",
+  name: "any_name",
+  password: "any_password",
+});
+
+const makeLoadAccountByEmailRepository = () => {
+  class LoadAccountByEmailRepositorySpy
+    implements LoadAccountByEmailRepository
+  {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    public async load(email: string): Promise<AccountModel> {
+      return makeFakeAccount();
+    }
+  }
+
+  return new LoadAccountByEmailRepositorySpy();
+};
+
+const makeSut = () => {
+  const loadAccountByEmailRepositorySpy = makeLoadAccountByEmailRepository();
+  const sut = new DbAuthentication(loadAccountByEmailRepositorySpy);
+
+  return {
+    sut,
+    loadAccountByEmailRepositorySpy,
+  };
+};
+
 describe("DbAuthentication UseCase", () => {
   test("should call LoadAccountByEmailRepository with correct Email", () => {
-    class LoadAccountByEmailRepositorySpy
-      implements LoadAccountByEmailRepository
-    {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      public async load(email: string): Promise<AccountModel> {
-        return {
-          email: "any_email@mail.com",
-          id: "any_id",
-          name: "any_name",
-          password: "any_password",
-        };
-      }
-    }
-
-    const loadAccountByEmailRepositorySpy =
-      new LoadAccountByEmailRepositorySpy();
-
-    const sut = new DbAuthentication(loadAccountByEmailRepositorySpy);
+    const { sut, loadAccountByEmailRepositorySpy } = makeSut();
     const loadSpy = jest.spyOn(loadAccountByEmailRepositorySpy, "load");
 
     sut.auth({
